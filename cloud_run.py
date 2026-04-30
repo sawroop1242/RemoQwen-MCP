@@ -26,10 +26,10 @@ os.environ.setdefault("MCP_MODE", "autonomous")
 os.environ.setdefault("HEADLESS", "true")
 os.environ.setdefault("LOG_LEVEL", "INFO")
 
-# ─── Step 3: Fix PORT for Render (Render assigns PORT env var dynamically) ───
+# ─── Step 3: Fix PORT for Render ─────────────────────────────────────────────
 render_port = os.getenv("PORT", "8000")
 os.environ["PORT"] = render_port
-os.environ["HOST"] = "0.0.0.0"  # Must bind to 0.0.0.0 not 127.0.0.1
+os.environ["HOST"] = "0.0.0.0"
 print(f"✅ Server will bind to 0.0.0.0:{render_port}")
 
 # ─── Step 4: Check required environment variables ────────────────────────────
@@ -40,22 +40,26 @@ if missing:
 else:
     print("✅ Telegram env vars found")
 
-# ─── Step 5: Check REMOTION_PROJECT_PATH ─────────────────────────────────────
-remotion_path = os.getenv("REMOTION_PROJECT_PATH")
-if remotion_path:
-    path_obj = Path(remotion_path)
-    if not path_obj.exists():
-        print(f"📁 Creating Remotion project folder: {remotion_path}")
-        path_obj.mkdir(parents=True, exist_ok=True)
-    else:
-        print(f"✅ Remotion project found at: {remotion_path}")
-else:
-    print("⚠️  REMOTION_PROJECT_PATH not set")
+# ─── Step 5: Setup REMOTION_PROJECT_PATH safely ──────────────────────────────
+# /tmp is always writable on Render, Railway, and any cloud server
+# Do NOT use /app — Render does not allow writing there
+remotion_path = os.getenv("REMOTION_PROJECT_PATH", "/tmp/my-video")
+
+try:
+    Path(remotion_path).mkdir(parents=True, exist_ok=True)
+    os.environ["REMOTION_PROJECT_PATH"] = remotion_path
+    print(f"✅ Remotion project folder ready: {remotion_path}")
+except PermissionError:
+    fallback = "/tmp/my-video"
+    print(f"⚠️  Permission denied for {remotion_path} — using fallback: {fallback}")
+    Path(fallback).mkdir(parents=True, exist_ok=True)
+    os.environ["REMOTION_PROJECT_PATH"] = fallback
+    print(f"✅ Fallback folder ready: {fallback}")
 
 # ─── Step 6: Auto-answer ALL interactive prompts ─────────────────────────────
 # Prompt 1: Mode selection  → "1" (Fully Autonomous)
 # Prompt 2: Enable Telegram → "Y"
-# Prompt 3+: any others    → "Y" (safe default)
+# Prompt 3+: any others    → "Y"
 sys.stdin = io.StringIO("1\nY\nY\nY\n")
 print("✅ Interactive prompts will be auto-answered")
 
