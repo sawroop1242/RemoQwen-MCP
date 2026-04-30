@@ -26,37 +26,50 @@ os.environ.setdefault("MCP_MODE", "autonomous")
 os.environ.setdefault("HEADLESS", "true")
 os.environ.setdefault("LOG_LEVEL", "INFO")
 
-# ─── Step 3: Check required environment variables ────────────────────────────
+# ─── Step 3: Fix PORT for Render (Render assigns PORT env var dynamically) ───
+render_port = os.getenv("PORT", "8000")
+os.environ["PORT"] = render_port
+os.environ["HOST"] = "0.0.0.0"  # Must bind to 0.0.0.0 not 127.0.0.1
+print(f"✅ Server will bind to 0.0.0.0:{render_port}")
+
+# ─── Step 4: Check required environment variables ────────────────────────────
 required_vars = ["TELEGRAM_TOKEN", "AUTHORIZED_CHAT_ID"]
 missing = [v for v in required_vars if not os.getenv(v)]
 if missing:
     print(f"⚠️  Missing env vars: {', '.join(missing)}")
-    print("   Telegram remote control will not work without these.")
 else:
     print("✅ Telegram env vars found")
 
-# ─── Step 4: Check REMOTION_PROJECT_PATH ─────────────────────────────────────
+# ─── Step 5: Check REMOTION_PROJECT_PATH ─────────────────────────────────────
 remotion_path = os.getenv("REMOTION_PROJECT_PATH")
 if remotion_path:
-    if Path(remotion_path).exists():
-        print(f"✅ Remotion project found at: {remotion_path}")
+    path_obj = Path(remotion_path)
+    if not path_obj.exists():
+        print(f"📁 Creating Remotion project folder: {remotion_path}")
+        path_obj.mkdir(parents=True, exist_ok=True)
     else:
-        print(f"⚠️  REMOTION_PROJECT_PATH set but folder not found: {remotion_path}")
+        print(f"✅ Remotion project found at: {remotion_path}")
 else:
     print("⚠️  REMOTION_PROJECT_PATH not set")
 
-# ─── Step 5: Auto-answer interactive mode prompt (select mode 1 = Autonomous) ─
-sys.stdin = io.StringIO("1\n")
+# ─── Step 6: Auto-answer ALL interactive prompts ─────────────────────────────
+# Prompt 1: Mode selection  → "1" (Fully Autonomous)
+# Prompt 2: Enable Telegram → "Y"
+# Prompt 3+: any others    → "Y" (safe default)
+sys.stdin = io.StringIO("1\nY\nY\nY\n")
+print("✅ Interactive prompts will be auto-answered")
 
-# ─── Step 6: Launch the main server ──────────────────────────────────────────
+# ─── Step 7: Launch the main server ──────────────────────────────────────────
 print("🦁 Launching RemoQwen-MCP server (Eternal Watcher)...")
 print("─" * 50)
 
 try:
     exec(open("run.py").read())
 except KeyboardInterrupt:
-    print("\n👋 Server stopped by user.")
+    print("\n👋 Server stopped.")
 except Exception as e:
     print(f"❌ Server crashed: {e}")
+    import traceback
+    traceback.print_exc()
     sys.exit(1)
-  
+    
