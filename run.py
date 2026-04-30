@@ -166,7 +166,7 @@ if __name__ == "__main__":
         # 3. Hand over event loop control to Uvicorn with High-Persistence parameters
         uvicorn.run(
             app, 
-            host="127.0.0.1", 
+            host="0.0.0.0", 
             port=8000, 
             access_log=False, 
             log_level="critical",
