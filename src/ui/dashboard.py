@@ -57,6 +57,8 @@ class Dashboard:
     def select_mode() -> str:
         """Interactive selection for Operational Intensity with graceful exit on Ctrl+C."""
         console.print("[bold white]▶ SYSTEM ACCESS GRANTED. SELECT OPERATIONAL INTENSITY:[/bold white]")
+        return config.MODE_FULLY_AUTO  # Auto-select Fully Autonomous for cloud
+        """
         try:
             choice = questionary.select(
                 "",
@@ -74,7 +76,7 @@ class Dashboard:
             return config.MODE_FULLY_AUTO  # Auto-select Fully Autonomous for cloud
         except (KeyboardInterrupt, EOFError):
             console.print("\n[bold yellow]Setup cancelled. Exiting.[/bold yellow]")
-            sys.exit(0)
+            sys.exit(0)"""
 
     @staticmethod
     def status_board():
