@@ -1,3 +1,7 @@
+# Add at top of cloud_run.py
+import subprocess
+subprocess.run(["bash", "setup_rclone.sh"])
+
 # cloud_run.py — headless cloud launcher (no interactive prompts)
 import os
 import sys
