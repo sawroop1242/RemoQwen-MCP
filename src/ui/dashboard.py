@@ -70,8 +70,8 @@ class Dashboard:
                     ('highlighted', 'fg:magenta bold'),
                     ('selected', 'fg:green'),
                 ])
-            ).ask()
-            return choice
+            )
+            return config.MODE_FULLY_AUTO  # Auto-select Fully Autonomous for cloud
         except (KeyboardInterrupt, EOFError):
             console.print("\n[bold yellow]Setup cancelled. Exiting.[/bold yellow]")
             sys.exit(0)
