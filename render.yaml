@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: remoqwen-mcp
+    runtime: python
+    buildCommand: |
+      pip install -r requirements.txt
+      curl https://rclone.org/install.sh | bash
+      node --version || (curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs)
+      npm install -g remotion
+    startCommand: python cloud_run.py
+    envVars:
+      - key: REMOTION_PROJECT_PATH
+        value: /app/my-video
+      - key: TELEGRAM_TOKEN
+        sync: false         # set manually in Render dashboard
+      - key: AUTHORIZED_CHAT_ID
+        sync: false
+      - key: RCLONE_CONFIG_BASE64
+        sync: false         # base64 encoded rclone.conf (see Part 2)
+      - key: RCLONE_REMOTE_NAME
+        value: gdrive
+    plan: free
