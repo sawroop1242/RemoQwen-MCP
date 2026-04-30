@@ -154,7 +154,7 @@ if __name__ == "__main__":
         # 1. Boot up Interactive UI sequence (Pure Synchronous)
         db.header()
         config.TELEGRAM_ENABLED = telegram_setup_wizard()
-        config.SELECTED_MODE = "MODE_FULLY_AUTO"#db.select_mode()
+        config.SELECTED_MODE = db.select_mode()
         config.refresh_env()  # Lock in final pathing configuration
 
         # 2. Validate project path exists
