@@ -60,9 +60,10 @@ except PermissionError:
 # Prompt 1: Mode selection  → "1" (Fully Autonomous)
 # Prompt 2: Enable Telegram → "Y"
 # Prompt 3+: any others    → "Y"
+"""
 sys.stdin = io.StringIO("1\nY\nY\nY\n")
 print("✅ Interactive prompts will be auto-answered")
-
+"""
 # ─── Step 7: Launch the main server ──────────────────────────────────────────
 print("🦁 Launching RemoQwen-MCP server (Eternal Watcher)...")
 print("─" * 50)
