@@ -71,7 +71,7 @@ def telegram_setup_wizard() -> bool:
                 return True
         return False
     else:
-        return questionary.confirm("Enable Telegram Remote Commander for this session?", default=True).ask()
+        return True #questionary.confirm("Enable Telegram Remote Commander for this session?", default=True).ask()
 
 # =============================================================================
 # CORE SERVER ENGINE (Lifespan & Heartbeat Architecture)
